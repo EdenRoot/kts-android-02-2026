@@ -1,5 +1,7 @@
 package orders
 
+private const val PERCENT_BASE = 100
+
 /**
  * Applies a percentage discount to every product in the order.
  *
@@ -14,5 +16,13 @@ fun Order.applyDiscount(
     discountPercent: Int,
     logger: ((String) -> Unit)? = null
 ) {
-    // TODO: apply discount to each product using extension + scoped functions
+    val productsCopy = products.toList()
+
+    for (product in productsCopy) {
+        val discountedPrice = product.price * (PERCENT_BASE - discountPercent) / PERCENT_BASE
+        val discountedProduct = product.copy(price = discountedPrice)
+        removeProductById(product.id)
+        addProduct(discountedProduct)
+        logger?.invoke("Applied $discountPercent% discount to product ${product.name}")
+    }
 }
